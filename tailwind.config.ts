@@ -18,6 +18,10 @@ export default {
 			}
 		},
 		extend: {
+			fontFamily: {
+				'arial': ['Arial', 'sans-serif'],
+				'brand': ['Arial', 'sans-serif'],
+			},
 			colors: {
 				border: 'hsl(var(--border))',
 				input: 'hsl(var(--input))',
@@ -51,6 +55,15 @@ export default {
 				card: {
 					DEFAULT: 'hsl(var(--card))',
 					foreground: 'hsl(var(--card-foreground))'
+				},
+				nav: {
+					background: 'hsl(var(--nav-background))',
+					text: 'hsl(var(--nav-text))',
+					hover: 'hsl(var(--nav-hover))',
+					active: 'hsl(var(--nav-active))'
+				},
+				brand: {
+					primary: 'hsl(var(--brand-primary))'
 				},
 				sidebar: {
 					DEFAULT: 'hsl(var(--sidebar-background))',

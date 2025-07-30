@@ -1,12 +1,20 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+import Navigation from "@/components/Navigation";
 
 const Index = () => {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background">
-      <div className="text-center">
-        <h1 className="text-4xl font-bold mb-4">Welcome to Your Blank App</h1>
-        <p className="text-xl text-muted-foreground">Start building your amazing project here!</p>
-      </div>
+    <div className="min-h-screen bg-background">
+      <Navigation />
+      
+      <main className="flex items-center justify-center min-h-[calc(100vh-80px)]">
+        <div className="text-center px-6">
+          <h1 className="font-arial text-6xl md:text-8xl font-normal text-brand-primary mb-8 tracking-wide">
+            Rasper
+          </h1>
+          <p className="text-muted-foreground text-lg md:text-xl max-w-2xl mx-auto leading-relaxed">
+            Välkommen till Rasper - din plattform för träning, vinkällare och mycket mer.
+          </p>
+        </div>
+      </main>
     </div>
   );
 };
