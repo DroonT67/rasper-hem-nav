@@ -164,10 +164,11 @@ const TrainingsSettings = () => {
         </div>
         
         <div className="space-y-2 border-t pt-4">
-          <Input
+          <Textarea
             placeholder="Passnamn..."
             value={newExerciseName}
             onChange={(e) => setNewExerciseName(e.target.value)}
+            rows={2}
           />
           <Textarea
             placeholder="Innehåll (t.ex. Armhävningar 3 × 10)..."
