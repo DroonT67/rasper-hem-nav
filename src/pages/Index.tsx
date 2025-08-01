@@ -1,5 +1,4 @@
 import Navigation from "@/components/Navigation";
-import rasperLogo from "@/assets/rasper-logo-clean.png";
 
 const Index = () => {
   return (
@@ -9,7 +8,7 @@ const Index = () => {
       <main className="flex items-center justify-center min-h-[calc(100vh-80px)]">
         <div className="text-center px-6">
           <img 
-            src={rasperLogo} 
+            src="/lovable-uploads/efe55428-daf1-4989-a784-a760292d0b7f.png" 
             alt="Rasper" 
             className="mx-auto mb-8 h-64 w-auto"
           />

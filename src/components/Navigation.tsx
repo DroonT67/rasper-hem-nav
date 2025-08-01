@@ -17,7 +17,7 @@ const Navigation = () => {
         <div className="flex items-center justify-between">
           <Link to="/" className="flex-shrink-0">
             <img 
-              src="/lovable-uploads/a072be70-e958-41a6-a84a-852d10c0e8d3.png" 
+              src="/lovable-uploads/7091db91-c137-4c93-bdec-034ec06ed389.png" 
               alt="Rasper" 
               className="h-8 w-auto"
             />
