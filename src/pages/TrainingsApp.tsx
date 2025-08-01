@@ -84,12 +84,42 @@ const TrainingsApp = () => {
     return weekProgress[week]?.[day] || { daily: false, mag: false, challenge: false, rest: false };
   };
 
+  const isWeekCompleted = (week: number): boolean => {
+    const structure = getWeekStructure(week);
+    return days.every(day => {
+      const dayTypes = structure[day];
+      const progress = getDayProgress(week, day);
+      
+      if (dayTypes.includes("rest")) return true;
+      
+      return dayTypes.every(type => {
+        if (type === "daily") return progress.daily;
+        if (type === "mag") return progress.mag;
+        if (type === "challenge") return progress.challenge;
+        return true;
+      });
+    });
+  };
+
+  const getNextIncompleteWeek = (): number => {
+    for (let week = 1; week <= 10; week++) {
+      if (!isWeekCompleted(week)) return week;
+    }
+    return 1;
+  };
+
   const toggleWeek = (week: number) => {
     setOpenWeeks(prev => ({
       ...prev,
       [week]: !prev[week]
     }));
   };
+
+  // Auto-center nästa ofullständiga vecka
+  useEffect(() => {
+    const nextWeek = getNextIncompleteWeek();
+    setOpenWeeks(prev => ({ [nextWeek]: true }));
+  }, [weekProgress, savedSettings]);
 
   return (
     <div className="min-h-screen bg-background">
@@ -110,6 +140,7 @@ const TrainingsApp = () => {
             {weeks.map(week => {
               const structure = getWeekStructure(week);
               const isOpen = openWeeks[week];
+              const isCompleted = isWeekCompleted(week);
               
               return (
                 <div key={week} className="flex-shrink-0 w-80">
@@ -117,10 +148,17 @@ const TrainingsApp = () => {
                     <CollapsibleTrigger asChild>
                       <Button 
                         variant="outline" 
-                        className="w-full justify-between p-4 h-auto"
+                        className={`w-full justify-between p-4 h-auto ${
+                          isCompleted ? "bg-green-500/20 border-green-500 text-green-700 dark:text-green-300" : ""
+                        }`}
                       >
                         <span className="text-lg font-semibold">Vecka {week}</span>
-                        {isOpen ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
+                        <div className="flex items-center space-x-2">
+                          <Link to="/trainingsapp/settings" onClick={(e) => e.stopPropagation()}>
+                            <Settings className="h-4 w-4" />
+                          </Link>
+                          {isOpen ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
+                        </div>
                       </Button>
                     </CollapsibleTrigger>
                     
