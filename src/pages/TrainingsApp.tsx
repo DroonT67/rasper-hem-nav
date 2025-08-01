@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Settings, ChevronDown, ChevronRight } from "lucide-react";
@@ -19,34 +19,41 @@ interface WeekProgress {
 const TrainingsApp = () => {
   const [weekProgress, setWeekProgress] = useState<{ [week: number]: WeekProgress }>({});
   const [openWeeks, setOpenWeeks] = useState<{ [week: number]: boolean }>({ 1: true });
+  const [savedSettings, setSavedSettings] = useState<any>({});
 
   const days = ["måndag", "tisdag", "onsdag", "torsdag", "fredag", "lördag", "söndag"];
   const weeks = Array.from({ length: 10 }, (_, i) => i + 1);
 
-  // Exempel på veckostruktur - kan göras mer avancerad senare
+  // Ladda sparade inställningar från localStorage
+  useEffect(() => {
+    const saved = localStorage.getItem('training-settings');
+    if (saved) {
+      try {
+        setSavedSettings(JSON.parse(saved));
+      } catch (error) {
+        console.error('Could not load training settings:', error);
+      }
+    }
+  }, []);
+
+  // Default veckostruktur som fallback
+  const getDefaultWeekStructure = () => ({
+    måndag: ["daily", "mag"],
+    tisdag: ["daily", "challenge"],
+    onsdag: ["daily", "mag"],
+    torsdag: ["daily", "challenge"],
+    fredag: ["daily", "mag"],
+    lördag: ["daily"],
+    söndag: ["rest"]
+  });
+
+  // Hämta veckostruktur från sparade inställningar eller använd default
   const getWeekStructure = (week: number) => {
-    const structure: { [key: string]: string[] } = {};
-    days.forEach((day, index) => {
-      const dayTypes = ["daily"];
-      
-      // Vilodag varje söndag
-      if (index === 6) {
-        dayTypes.splice(0, 1, "rest");
-      }
-      
-      // Magepass 3 gånger/vecka (måndag, onsdag, fredag)
-      if (index === 0 || index === 2 || index === 4) {
-        dayTypes.push("mag");
-      }
-      
-      // Utmaningar 2 gånger/vecka (tisdag, torsdag)
-      if (index === 1 || index === 3) {
-        dayTypes.push("challenge");
-      }
-      
-      structure[day] = dayTypes;
-    });
-    return structure;
+    const weekData = savedSettings[week];
+    if (weekData && weekData.schedule) {
+      return weekData.schedule;
+    }
+    return getDefaultWeekStructure();
   };
 
   const getIcon = (dayTypes: string[], progress: DayProgress) => {
