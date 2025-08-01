@@ -67,14 +67,14 @@ const TrainingsApp = () => {
     return icons.length > 0 ? icons.join(" ") : "○";
   };
 
-  const markCompleted = (week: number, day: string, type: string) => {
+  const toggleCompleted = (week: number, day: string, type: string) => {
     setWeekProgress(prev => ({
       ...prev,
       [week]: {
         ...prev[week],
         [day]: {
           ...prev[week]?.[day],
-          [type]: true
+          [type]: !prev[week]?.[day]?.[type]
         } as DayProgress
       }
     }));
@@ -147,40 +147,40 @@ const TrainingsApp = () => {
                                   {getIcon(dayTypes, progress)}
                                 </span>
                                 
-                                {!dayTypes.includes("rest") && (
-                                  <div className="flex flex-col space-y-1">
-                                    {dayTypes.includes("daily") && !progress.daily && (
-                                      <Button 
-                                        size="sm" 
-                                        variant="outline"
-                                        onClick={() => markCompleted(week, day, "daily")}
-                                        className="text-xs px-2 py-1"
-                                      >
-                                        Dagligt ✓
-                                      </Button>
-                                    )}
-                                    {dayTypes.includes("mag") && !progress.mag && (
-                                      <Button 
-                                        size="sm" 
-                                        variant="outline"
-                                        onClick={() => markCompleted(week, day, "mag")}
-                                        className="text-xs px-2 py-1"
-                                      >
-                                        Mage ✓
-                                      </Button>
-                                    )}
-                                    {dayTypes.includes("challenge") && !progress.challenge && (
-                                      <Button 
-                                        size="sm" 
-                                        variant="outline"
-                                        onClick={() => markCompleted(week, day, "challenge")}
-                                        className="text-xs px-2 py-1"
-                                      >
-                                        Utmaning ✓
-                                      </Button>
-                                    )}
-                                  </div>
-                                )}
+                {!dayTypes.includes("rest") && (
+                  <div className="flex flex-col space-y-1">
+                    {dayTypes.includes("daily") && (
+                      <Button 
+                        size="sm" 
+                        variant={progress.daily ? "default" : "outline"}
+                        onClick={() => toggleCompleted(week, day, "daily")}
+                        className="text-xs px-2 py-1"
+                      >
+                        Dagligt {progress.daily ? "✓" : "○"}
+                      </Button>
+                    )}
+                    {dayTypes.includes("mag") && (
+                      <Button 
+                        size="sm" 
+                        variant={progress.mag ? "default" : "outline"}
+                        onClick={() => toggleCompleted(week, day, "mag")}
+                        className="text-xs px-2 py-1"
+                      >
+                        Mage {progress.mag ? "✓" : "○"}
+                      </Button>
+                    )}
+                    {dayTypes.includes("challenge") && (
+                      <Button 
+                        size="sm" 
+                        variant={progress.challenge ? "default" : "outline"}
+                        onClick={() => toggleCompleted(week, day, "challenge")}
+                        className="text-xs px-2 py-1"
+                      >
+                        Utmaning {progress.challenge ? "✓" : "○"}
+                      </Button>
+                    )}
+                  </div>
+                )}
                               </div>
                             </div>
                           );
