@@ -8,7 +8,7 @@ const Index = () => {
       <main className="flex items-center justify-center min-h-[calc(100vh-80px)]">
         <div className="text-center px-6">
           <img 
-            src="/lovable-uploads/efe55428-daf1-4989-a784-a760292d0b7f.png" 
+            src="/lovable-uploads/96fea96a-f4ad-4429-abab-b36bdd0926bd.png" 
             alt="Rasper" 
             className="mx-auto mb-8 h-64 w-auto"
           />
