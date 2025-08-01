@@ -1,6 +1,6 @@
 import { Link, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
-import rasperLogoSmall from "@/assets/rasper-logo-small.png";
+import rasperLogoSmall from "/lovable-uploads/rasper-logo-small.png";
 
 const Navigation = () => {
   const location = useLocation();
@@ -9,7 +9,7 @@ const Navigation = () => {
     { name: "Träningsapp", href: "/trainingsapp" },
     { name: "Vinkällare", href: "/vinkallare" },
     { name: "Anmälan", href: "/anmalan" },
-    { name: "Knapp N", href: "/knapp-n" },
+    { name: "Recept", href: "/knapp-n" },
   ];
 
   return (

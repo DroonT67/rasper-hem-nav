@@ -1,5 +1,5 @@
 import Navigation from "@/components/Navigation";
-import rasperLogoMain from "@/assets/rasper-logo-main.png";
+import rasperLogoMain from "/lovable-uploads/rasper-logo-main.png";
 
 const Index = () => {
   return (
