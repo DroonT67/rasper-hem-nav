@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Settings } from "lucide-react";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { Settings, ChevronDown, ChevronRight } from "lucide-react";
 import { Link } from "react-router-dom";
 import Navigation from "@/components/Navigation";
 
@@ -17,6 +18,7 @@ interface WeekProgress {
 
 const TrainingsApp = () => {
   const [weekProgress, setWeekProgress] = useState<{ [week: number]: WeekProgress }>({});
+  const [openWeeks, setOpenWeeks] = useState<{ [week: number]: boolean }>({ 1: true });
 
   const days = ["måndag", "tisdag", "onsdag", "torsdag", "fredag", "lördag", "söndag"];
   const weeks = Array.from({ length: 10 }, (_, i) => i + 1);
@@ -32,7 +34,7 @@ const TrainingsApp = () => {
         dayTypes.splice(0, 1, "rest");
       }
       
-      // Magpass 3 gånger/vecka (måndag, onsdag, fredag)
+      // Magepass 3 gånger/vecka (måndag, onsdag, fredag)
       if (index === 0 || index === 2 || index === 4) {
         dayTypes.push("mag");
       }
@@ -75,13 +77,20 @@ const TrainingsApp = () => {
     return weekProgress[week]?.[day] || { daily: false, mag: false, challenge: false, rest: false };
   };
 
+  const toggleWeek = (week: number) => {
+    setOpenWeeks(prev => ({
+      ...prev,
+      [week]: !prev[week]
+    }));
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <Navigation />
       
       <div className="container mx-auto px-4 py-8">
         <div className="flex justify-between items-center mb-8">
-          <h1 className="text-4xl font-bold text-brand-primary">Träningsschema</h1>
+          <h1 className="text-4xl font-bold text-brand-primary">Träning</h1>
           <Link to="/trainingsapp/settings">
             <Button variant="outline" size="icon">
               <Settings className="h-4 w-4" />
@@ -89,14 +98,25 @@ const TrainingsApp = () => {
           </Link>
         </div>
 
-        <div className="overflow-x-auto pb-4">
-          <div className="flex space-x-8 min-w-max">
-            {weeks.map(week => {
-              const structure = getWeekStructure(week);
-              return (
-                <div key={week} className="bg-card p-6 rounded-lg border min-w-[300px]">
-                  <h2 className="text-xl font-semibold mb-4 text-center">Vecka {week}</h2>
-                  <div className="space-y-3">
+        <div className="space-y-4">
+          {weeks.map(week => {
+            const structure = getWeekStructure(week);
+            const isOpen = openWeeks[week];
+            
+            return (
+              <Collapsible key={week} open={isOpen} onOpenChange={() => toggleWeek(week)}>
+                <CollapsibleTrigger asChild>
+                  <Button 
+                    variant="outline" 
+                    className="w-full justify-between p-4 h-auto"
+                  >
+                    <span className="text-lg font-semibold">Vecka {week}</span>
+                    {isOpen ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
+                  </Button>
+                </CollapsibleTrigger>
+                
+                <CollapsibleContent className="mt-2">
+                  <div className="bg-card p-4 rounded-lg border space-y-3">
                     {days.map(day => {
                       const dayTypes = structure[day];
                       const progress = getDayProgress(week, day);
@@ -108,7 +128,7 @@ const TrainingsApp = () => {
                             <div className="text-sm text-muted-foreground">
                               {dayTypes.includes("rest") ? "Vilodag" : 
                                dayTypes.filter(t => t !== "daily").map(t => 
-                                 t === "mag" ? "Mag" : t === "challenge" ? "Utmaning" : ""
+                                 t === "mag" ? "Mage" : t === "challenge" ? "Utmaning" : ""
                                ).filter(Boolean).join(", ")}
                             </div>
                           </div>
@@ -137,7 +157,7 @@ const TrainingsApp = () => {
                                     onClick={() => markCompleted(week, day, "mag")}
                                     className="text-xs px-2 py-1"
                                   >
-                                    Mag ✓
+                                    Mage ✓
                                   </Button>
                                 )}
                                 {dayTypes.includes("challenge") && !progress.challenge && (
@@ -157,10 +177,10 @@ const TrainingsApp = () => {
                       );
                     })}
                   </div>
-                </div>
-              );
-            })}
-          </div>
+                </CollapsibleContent>
+              </Collapsible>
+            );
+          })}
         </div>
       </div>
     </div>
