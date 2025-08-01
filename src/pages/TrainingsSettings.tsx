@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -20,36 +20,17 @@ interface WeekSchedule {
   [day: string]: string[]; // array of exercise types for each day
 }
 
+interface WeekData {
+  dailyExercises: Exercise[];
+  magExercises: Exercise[];
+  challengeExercises: Exercise[];
+  schedule: WeekSchedule;
+}
+
 const TrainingsSettings = () => {
   const [currentWeek, setCurrentWeek] = useState<number>(1);
+  const [weekData, setWeekData] = useState<{ [weekNumber: number]: WeekData }>({});
   
-  const [dailyExercises, setDailyExercises] = useState<Exercise[]>([
-    { id: "1", name: "Armhävningar", content: "Armhävningar 3 × 10", rounds: 1, icon: "🙌" },
-    { id: "2", name: "Plankan", content: "Plankan 30 sekunder", rounds: 1, icon: "🙌" },
-    { id: "3", name: "Burpees", content: "Burpees 3 × 5", rounds: 1, icon: "🙌" },
-  ]);
-
-  const [magExercises, setMagExercises] = useState<Exercise[]>([
-    { id: "1", name: "Sit-ups", content: "Sit-ups 3 × 15", rounds: 2, icon: "💪" },
-    { id: "2", name: "Crunches", content: "Crunches 3 × 12", rounds: 2, icon: "💪" },
-    { id: "3", name: "Magcyklar", content: "Magcyklar 3 × 10", rounds: 2, icon: "💪" },
-  ]);
-
-  const [challengeExercises, setChallengeExercises] = useState<Exercise[]>([
-    { id: "1", name: "5km löpning", content: "5km löpning i egen takt", rounds: 1, icon: "🔥" },
-    { id: "2", name: "100 burpees", content: "100 burpees totalt", rounds: 1, icon: "🔥" },
-  ]);
-
-  const [weekSchedule, setWeekSchedule] = useState<WeekSchedule>({
-    måndag: ["daily", "mag"],
-    tisdag: ["daily", "challenge"],
-    onsdag: ["daily", "mag"],
-    torsdag: ["daily", "challenge"],
-    fredag: ["daily", "mag"],
-    lördag: ["daily"],
-    söndag: ["rest"]
-  });
-
   const [newExerciseName, setNewExerciseName] = useState("");
   const [newExerciseContent, setNewExerciseContent] = useState("");
   const [newExerciseRounds, setNewExerciseRounds] = useState(1);
@@ -62,6 +43,70 @@ const TrainingsSettings = () => {
     { value: "rest", label: "Vilodag", icon: "😴" }
   ];
 
+  // Default data för nya veckor
+  const getDefaultWeekData = (): WeekData => ({
+    dailyExercises: [
+      { id: "1", name: "Armhävningar", content: "Armhävningar 3 × 10", rounds: 1, icon: "🙌" },
+      { id: "2", name: "Plankan", content: "Plankan 30 sekunder", rounds: 1, icon: "🙌" },
+      { id: "3", name: "Burpees", content: "Burpees 3 × 5", rounds: 1, icon: "🙌" },
+    ],
+    magExercises: [
+      { id: "1", name: "Sit-ups", content: "Sit-ups 3 × 15", rounds: 2, icon: "💪" },
+      { id: "2", name: "Crunches", content: "Crunches 3 × 12", rounds: 2, icon: "💪" },
+      { id: "3", name: "Magcyklar", content: "Magcyklar 3 × 10", rounds: 2, icon: "💪" },
+    ],
+    challengeExercises: [
+      { id: "1", name: "5km löpning", content: "5km löpning i egen takt", rounds: 1, icon: "🔥" },
+      { id: "2", name: "100 burpees", content: "100 burpees totalt", rounds: 1, icon: "🔥" },
+    ],
+    schedule: {
+      måndag: ["daily", "mag"],
+      tisdag: ["daily", "challenge"],
+      onsdag: ["daily", "mag"],
+      torsdag: ["daily", "challenge"],
+      fredag: ["daily", "mag"],
+      lördag: ["daily"],
+      söndag: ["rest"]
+    }
+  });
+
+  // Ladda data från localStorage vid start
+  useEffect(() => {
+    const saved = localStorage.getItem('training-settings');
+    if (saved) {
+      try {
+        setWeekData(JSON.parse(saved));
+      } catch (error) {
+        console.error('Could not load training settings:', error);
+      }
+    }
+  }, []);
+
+  // Spara data till localStorage när weekData ändras
+  useEffect(() => {
+    if (Object.keys(weekData).length > 0) {
+      localStorage.setItem('training-settings', JSON.stringify(weekData));
+    }
+  }, [weekData]);
+
+  // Hämta aktuell veckodata
+  const getCurrentWeekData = (): WeekData => {
+    return weekData[currentWeek] || getDefaultWeekData();
+  };
+
+  // Uppdatera veckodata
+  const updateWeekData = (data: Partial<WeekData>) => {
+    setWeekData(prev => ({
+      ...prev,
+      [currentWeek]: {
+        ...getCurrentWeekData(),
+        ...data
+      }
+    }));
+  };
+
+  const currentData = getCurrentWeekData();
+
   const addExercise = (type: "daily" | "mag" | "challenge") => {
     if (!newExerciseName.trim() || !newExerciseContent.trim()) return;
 
@@ -73,12 +118,14 @@ const TrainingsSettings = () => {
       icon: type === "daily" ? "🙌" : type === "mag" ? "💪" : "🔥"
     };
 
+    const currentData = getCurrentWeekData();
+    
     if (type === "daily") {
-      setDailyExercises(prev => [...prev, newExercise]);
+      updateWeekData({ dailyExercises: [...currentData.dailyExercises, newExercise] });
     } else if (type === "mag") {
-      setMagExercises(prev => [...prev, newExercise]);
+      updateWeekData({ magExercises: [...currentData.magExercises, newExercise] });
     } else {
-      setChallengeExercises(prev => [...prev, newExercise]);
+      updateWeekData({ challengeExercises: [...currentData.challengeExercises, newExercise] });
     }
 
     setNewExerciseName("");
@@ -87,24 +134,30 @@ const TrainingsSettings = () => {
   };
 
   const removeExercise = (type: "daily" | "mag" | "challenge", id: string) => {
+    const currentData = getCurrentWeekData();
+    
     if (type === "daily") {
-      setDailyExercises(prev => prev.filter(ex => ex.id !== id));
+      updateWeekData({ dailyExercises: currentData.dailyExercises.filter(ex => ex.id !== id) });
     } else if (type === "mag") {
-      setMagExercises(prev => prev.filter(ex => ex.id !== id));
+      updateWeekData({ magExercises: currentData.magExercises.filter(ex => ex.id !== id) });
     } else {
-      setChallengeExercises(prev => prev.filter(ex => ex.id !== id));
+      updateWeekData({ challengeExercises: currentData.challengeExercises.filter(ex => ex.id !== id) });
     }
   };
 
   const updateDaySchedule = (day: string, types: string[]) => {
-    setWeekSchedule(prev => ({
-      ...prev,
-      [day]: types
-    }));
+    const currentData = getCurrentWeekData();
+    updateWeekData({ 
+      schedule: {
+        ...currentData.schedule,
+        [day]: types
+      }
+    });
   };
 
   const toggleDayType = (day: string, type: string) => {
-    const currentTypes = weekSchedule[day] || [];
+    const currentData = getCurrentWeekData();
+    const currentTypes = currentData.schedule[day] || [];
     let newTypes;
     
     if (type === "rest") {
@@ -240,7 +293,7 @@ const TrainingsSettings = () => {
                       <span className="w-20 capitalize font-medium">{day}</span>
                       <div className="flex flex-wrap gap-1">
                         {exerciseTypes.map(({ value, label, icon }) => {
-                          const isSelected = weekSchedule[day]?.includes(value);
+                          const isSelected = currentData.schedule[day]?.includes(value);
                           return (
                             <Button
                               key={value}
@@ -265,21 +318,21 @@ const TrainingsSettings = () => {
         <div className="grid gap-6 md:grid-cols-1 lg:grid-cols-3">
           <ExerciseList
             title="Dagliga pass"
-            exercises={dailyExercises}
+            exercises={currentData.dailyExercises}
             type="daily"
             icon="🙌"
           />
           
           <ExerciseList
             title="Magepass"
-            exercises={magExercises}
+            exercises={currentData.magExercises}
             type="mag"
             icon="💪"
           />
           
           <ExerciseList
             title="Utmaningar"
-            exercises={challengeExercises}
+            exercises={currentData.challengeExercises}
             type="challenge"
             icon="🔥"
           />
