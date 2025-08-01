@@ -98,89 +98,93 @@ const TrainingsApp = () => {
           </Link>
         </div>
 
-        <div className="space-y-4">
-          {weeks.map(week => {
-            const structure = getWeekStructure(week);
-            const isOpen = openWeeks[week];
-            
-            return (
-              <Collapsible key={week} open={isOpen} onOpenChange={() => toggleWeek(week)}>
-                <CollapsibleTrigger asChild>
-                  <Button 
-                    variant="outline" 
-                    className="w-full justify-between p-4 h-auto"
-                  >
-                    <span className="text-lg font-semibold">Vecka {week}</span>
-                    {isOpen ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
-                  </Button>
-                </CollapsibleTrigger>
-                
-                <CollapsibleContent className="mt-2">
-                  <div className="bg-card p-4 rounded-lg border space-y-3">
-                    {days.map(day => {
-                      const dayTypes = structure[day];
-                      const progress = getDayProgress(week, day);
-                      
-                      return (
-                        <div key={day} className="flex items-center justify-between p-3 bg-muted/50 rounded">
-                          <div className="flex-1">
-                            <span className="font-medium capitalize">{day}</span>
-                            <div className="text-sm text-muted-foreground">
-                              {dayTypes.includes("rest") ? "Vilodag" : 
-                               dayTypes.filter(t => t !== "daily").map(t => 
-                                 t === "mag" ? "Mage" : t === "challenge" ? "Utmaning" : ""
-                               ).filter(Boolean).join(", ")}
-                            </div>
-                          </div>
+        <div className="overflow-x-auto pb-4">
+          <div className="flex space-x-4 min-w-max">
+            {weeks.map(week => {
+              const structure = getWeekStructure(week);
+              const isOpen = openWeeks[week];
+              
+              return (
+                <div key={week} className="flex-shrink-0 w-80">
+                  <Collapsible open={isOpen} onOpenChange={() => toggleWeek(week)}>
+                    <CollapsibleTrigger asChild>
+                      <Button 
+                        variant="outline" 
+                        className="w-full justify-between p-4 h-auto"
+                      >
+                        <span className="text-lg font-semibold">Vecka {week}</span>
+                        {isOpen ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
+                      </Button>
+                    </CollapsibleTrigger>
+                    
+                    <CollapsibleContent className="mt-2">
+                      <div className="bg-card p-4 rounded-lg border space-y-3">
+                        {days.map(day => {
+                          const dayTypes = structure[day];
+                          const progress = getDayProgress(week, day);
                           
-                          <div className="flex items-center space-x-2">
-                            <span className="text-2xl">
-                              {getIcon(dayTypes, progress)}
-                            </span>
-                            
-                            {!dayTypes.includes("rest") && (
-                              <div className="flex flex-col space-y-1">
-                                {dayTypes.includes("daily") && !progress.daily && (
-                                  <Button 
-                                    size="sm" 
-                                    variant="outline"
-                                    onClick={() => markCompleted(week, day, "daily")}
-                                    className="text-xs px-2 py-1"
-                                  >
-                                    Dagligt ✓
-                                  </Button>
-                                )}
-                                {dayTypes.includes("mag") && !progress.mag && (
-                                  <Button 
-                                    size="sm" 
-                                    variant="outline"
-                                    onClick={() => markCompleted(week, day, "mag")}
-                                    className="text-xs px-2 py-1"
-                                  >
-                                    Mage ✓
-                                  </Button>
-                                )}
-                                {dayTypes.includes("challenge") && !progress.challenge && (
-                                  <Button 
-                                    size="sm" 
-                                    variant="outline"
-                                    onClick={() => markCompleted(week, day, "challenge")}
-                                    className="text-xs px-2 py-1"
-                                  >
-                                    Utmaning ✓
-                                  </Button>
+                          return (
+                            <div key={day} className="flex items-center justify-between p-3 bg-muted/50 rounded">
+                              <div className="flex-1">
+                                <span className="font-medium capitalize">{day}</span>
+                                <div className="text-sm text-muted-foreground">
+                                  {dayTypes.includes("rest") ? "Vilodag" : 
+                                   dayTypes.filter(t => t !== "daily").map(t => 
+                                     t === "mag" ? "Mage" : t === "challenge" ? "Utmaning" : ""
+                                   ).filter(Boolean).join(", ")}
+                                </div>
+                              </div>
+                              
+                              <div className="flex items-center space-x-2">
+                                <span className="text-2xl">
+                                  {getIcon(dayTypes, progress)}
+                                </span>
+                                
+                                {!dayTypes.includes("rest") && (
+                                  <div className="flex flex-col space-y-1">
+                                    {dayTypes.includes("daily") && !progress.daily && (
+                                      <Button 
+                                        size="sm" 
+                                        variant="outline"
+                                        onClick={() => markCompleted(week, day, "daily")}
+                                        className="text-xs px-2 py-1"
+                                      >
+                                        Dagligt ✓
+                                      </Button>
+                                    )}
+                                    {dayTypes.includes("mag") && !progress.mag && (
+                                      <Button 
+                                        size="sm" 
+                                        variant="outline"
+                                        onClick={() => markCompleted(week, day, "mag")}
+                                        className="text-xs px-2 py-1"
+                                      >
+                                        Mage ✓
+                                      </Button>
+                                    )}
+                                    {dayTypes.includes("challenge") && !progress.challenge && (
+                                      <Button 
+                                        size="sm" 
+                                        variant="outline"
+                                        onClick={() => markCompleted(week, day, "challenge")}
+                                        className="text-xs px-2 py-1"
+                                      >
+                                        Utmaning ✓
+                                      </Button>
+                                    )}
+                                  </div>
                                 )}
                               </div>
-                            )}
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </CollapsibleContent>
-              </Collapsible>
-            );
-          })}
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </CollapsibleContent>
+                  </Collapsible>
+                </div>
+              );
+            })}
+          </div>
         </div>
       </div>
     </div>
