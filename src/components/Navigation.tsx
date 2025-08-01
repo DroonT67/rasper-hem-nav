@@ -1,5 +1,6 @@
 import { Link, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
+import rasperLogoSmall from "@/assets/rasper-logo-small.png";
 
 const Navigation = () => {
   const location = useLocation();
@@ -17,9 +18,12 @@ const Navigation = () => {
         <div className="flex items-center justify-between">
           <Link to="/" className="flex-shrink-0">
             <img 
-              src="/lovable-uploads/7091db91-c137-4c93-bdec-034ec06ed389.png" 
+              src={rasperLogoSmall} 
               alt="Rasper" 
               className="h-8 w-auto"
+              onError={(e) => {
+                e.currentTarget.style.display = 'none';
+              }}
             />
           </Link>
           
